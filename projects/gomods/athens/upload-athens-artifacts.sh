@@ -21,6 +21,19 @@ err_report() {
 }
 trap 'err_report $LINENO' ERR
 
+
+GOLANG_VERSION="${GOLANG_VERSION:-1.14.13}"
+wget \
+  --progress dot:giga \
+  --max-redirect=1 \
+  --domains golang.org \
+  https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz
+sha256sum -c $BASE_DIR/golang-checksum
+tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz
+
+rm go${GOLANG_VERSION}.linux-amd64.tar.gz
+mv /usr/local/go/bin/* /usr/bin/
+
 ATHENS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 source "${ATHENS_ROOT}/../../../helm-charts/scripts/lib.sh"
 BUILD_DIR="$ATHENS_ROOT/build"
