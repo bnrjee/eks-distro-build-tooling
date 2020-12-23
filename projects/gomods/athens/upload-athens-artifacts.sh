@@ -22,7 +22,7 @@ err_report() {
 trap 'err_report $LINENO' ERR
 
 
-GOLANG_VERSION="${GOLANG_VERSION:-1.14.13}"
+GOLANG_VERSION="${GOLANG_VERSION:-1.15.6}"
 wget \
   --progress dot:giga \
   --max-redirect=1 \
