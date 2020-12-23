@@ -28,9 +28,7 @@ wget \
   --max-redirect=1 \
   --domains golang.org \
   https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz
-sha256sum -c $BASE_DIR/golang-checksum
 tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz
-
 rm go${GOLANG_VERSION}.linux-amd64.tar.gz
 mv /usr/local/go/bin/* /usr/bin/
 
