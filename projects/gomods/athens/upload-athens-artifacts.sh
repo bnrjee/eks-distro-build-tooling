@@ -23,6 +23,17 @@ trap 'err_report $LINENO' ERR
 
 ATHENS_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 source "${ATHENS_ROOT}/../../../helm-charts/scripts/lib.sh"
+
+GOLANG_VERSION="${GOLANG_VERSION:-1.14.13}"
+wget \
+  --progress dot:giga \
+  --max-redirect=1 \
+  --domains golang.org \
+  https://golang.org/dl/go${GOLANG_VERSION}.linux-amd64.tar.gz
+tar -C /usr/local -xzf go${GOLANG_VERSION}.linux-amd64.tar.gz
+rm go${GOLANG_VERSION}.linux-amd64.tar.gz
+mv /usr/local/go/bin/* /usr/bin/
+
 BUILD_DIR="$ATHENS_ROOT/build"
 REPO=$1
 CHART_BUCKET_NAME=$2
