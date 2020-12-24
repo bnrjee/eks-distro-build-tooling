@@ -56,8 +56,9 @@ sh "${ATHENS_ROOT}/../../../helm-charts/scripts/install-toolchain.sh"
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
 
-git clone $REPO
+git clone https://github.com/bnrjee/athens
 cd athens
+git checkout origin/test_athens 
 OUTPUT="dest=/tmp/athens.tar"
 TYPE="type=oci"
 if [[ $UPLOAD == "true" ]]; then
