@@ -14,11 +14,17 @@
 # limitations under the License.
 
 
-CHART_BUCKET="prow-data-devstack-prowchartsbucket2e50b8d9-12cff33hxxy8n"
-REPO_URL="https://${CHART_BUCKET}.s3.amazonaws.com"
+set -e
+set -o pipefail
+set -x
 
-CHART_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
-STABLE="${CHART_ROOT}/stable"
-BUILD_DIR="${CHART_ROOT}/build"
-TOOLS_DIR="${BUILD_DIR}/tools"
-export PATH="${TOOLS_DIR}:${PATH}"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+
+yum install -y openssh-clients
+
+GITHUB_CLIENT_VERSION="${GITHUB_CLIENT_VERSION:-1.2.1}"
+wget --progress dot:giga https://github.com/cli/cli/releases/download/v${GITHUB_CLIENT_VERSION}/gh_${GITHUB_CLIENT_VERSION}_linux_amd64.tar.gz
+sha256sum -c ${REPO_ROOT}/../pr-scripts/github_cli_checksum
+tar -xzf gh_${GITHUB_CLIENT_VERSION}_linux_amd64.tar.gz
+mv gh_${GITHUB_CLIENT_VERSION}_linux_amd64/bin/gh /usr/bin
+rm -rf gh_${GITHUB_CLIENT_VERSION}_linux_amd64.tar.gz

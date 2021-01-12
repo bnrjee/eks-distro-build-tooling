@@ -6,7 +6,8 @@ BASE_IMAGE?=public.ecr.aws/amazonlinux/amazonlinux:2
 
 IMAGE_REPO?=$(AWS_ACCOUNT_ID).dkr.ecr.$(AWS_REGION).amazonaws.com
 IMAGE_NAME?=eks-distro/builder
-# This tag is overwritten in the prow job to point to the commit hash
+# This tag is overwritten in the prow job to point to the PR branch commit hash (presubmit)
+# or the base branch commit hash (postsubmit)
 IMAGE_TAG?=latest
 IMAGE?=$(IMAGE_REPO)/$(IMAGE_NAME):$(IMAGE_TAG)
 
@@ -16,7 +17,8 @@ endif
 
 .PHONY: local-images
 local-images:
-	mkdir -p /tmp/builder-base
+	# Sleeping until buildkit daemon is running on the other container
+	sleep 10
 	buildctl \
 		build \
 		--frontend dockerfile.v0 \
@@ -24,10 +26,13 @@ local-images:
 		--opt build-arg:BASE_IMAGE=$(BASE_IMAGE) \
 		--local dockerfile=./ \
 		--local context=. \
-		--output type=tar,dest=/tmp/builder-base/output.tar
+		--output type=tar,dest=/tmp/builder-base.tar
+	./update_base_image.sh --dry-run
 
 .PHONY: images
 images:
+	# Sleeping until buildkit daemon is running on the other container
+	sleep 10
 	buildctl \
 		build \
 		--frontend dockerfile.v0 \
@@ -36,6 +41,7 @@ images:
 		--local dockerfile=./ \
 		--local context=. \
 		--output type=image,oci-mediatypes=true,name=$(IMAGE),push=true
+	./update_base_image.sh
 
 # for local development only
 docker:

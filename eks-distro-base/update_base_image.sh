@@ -18,8 +18,10 @@ set -e
 set -o pipefail
 set -x
 
-bash ./eks-distro-base/install_gh.sh
-export DATE_EPOCH=$(date "+%F-%s")
-make release -C eks-distro-base DEVELOPMENT=false IMAGE_TAG=${DATE_EPOCH}
-bash ./eks-distro-base/create_pr.sh eks-distro-build-tooling '.*' ${DATE_EPOCH} TAG_FILE
-bash ./eks-distro-base/create_pr.sh eks-distro 'BASE_TAG?=.*' 'BASE_TAG?='"${DATE_EPOCH}" Makefile
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+IMAGE_TAG=$1
+DRY_RUN_FLAG=$2
+
+${REPO_ROOT}/../pr-scripts/install_gh.sh
+${REPO_ROOT}/../pr-scripts/create_pr.sh eks-distro-build-tooling '.*' $IMAGE_TAG TAG_FILE $DRY_RUN_FLAG
+${REPO_ROOT}/../pr-scripts/create_pr.sh eks-distro 'BASE_TAG?=.*' 'BASE_TAG?='"$IMAGE_TAG" Makefile $IMAGE_TAG $DRY_RUN_FLAG

@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-# Copyright 2020 Amazon.com Inc. or its affiliates. All Rights Reserved.
+# Copyright Amazon.com Inc. or its affiliates. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,12 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+fullnameOverride: ''
+nameOverride: ''
 
-CHART_BUCKET="prow-data-devstack-prowchartsbucket2e50b8d9-12cff33hxxy8n"
-REPO_URL="https://${CHART_BUCKET}.s3.amazonaws.com"
+region: 'us-west-2'
 
-CHART_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
-STABLE="${CHART_ROOT}/stable"
-BUILD_DIR="${CHART_ROOT}/build"
-TOOLS_DIR="${BUILD_DIR}/tools"
-export PATH="${TOOLS_DIR}:${PATH}"
+clusterName: 'my-eks-cluster'
+
+cloudwatchAgent:
+  image: 'amazon/cloudwatch-agent:1.247346.0b249609'
+  serviceAccount:
+    name: 'cloudwatch-agent'
+    annotations: {}
+    create: false

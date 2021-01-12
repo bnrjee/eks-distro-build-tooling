@@ -47,7 +47,7 @@ yum install -y \
     wget \
     which
 
-GOLANG_VERSION="${GOLANG_VERSION:-1.13.15}"
+GOLANG_VERSION="${GOLANG_VERSION:-1.15.6}"
 wget \
     --progress dot:giga \
     --max-redirect=1 \
@@ -66,5 +66,30 @@ sha256sum -c $BASE_DIR/buildkit-checksum
 tar -C /usr -xzf buildkit-$BUILDKIT_VERSION.linux-amd64.tar.gz
 rm -rf buildkit-$BUILDKIT_VERSION.linux-amd64.tar.gz
 
+# Bash 4.3 is required to run kubernetes make test
+OVERRIDE_BASH_VERSION="${OVERRIDE_BASH_VERSION:-4.3}"
+wget http://ftp.gnu.org/gnu/bash/bash-$OVERRIDE_BASH_VERSION.tar.gz 
+tar -xf bash-$OVERRIDE_BASH_VERSION.tar.gz
+sha256sum -c $BASE_DIR/bash-checksum
+
+cd bash-$OVERRIDE_BASH_VERSION
+./configure --prefix=/usr --without-bash-malloc
+make 
+make install 
+cd ..
+rm -f bash-$OVERRIDE_BASH_VERSION.tar.gz
+rm -rf bash-$OVERRIDE_BASH_VERSION
+
 # directory setup
 mkdir -p /go/src /go/bin /go/pkg /go/src/github.com/aws/eks-distro
+
+# install additional versions of go
+export GOPATH=/go
+export PATH=${GOPATH}/bin/:$PATH
+
+for version in "${GOLANG113_VERSION:-1.13.15}" "${GOLANG114_VERSION:-1.14.13}" "${GOLANG115_VERSION:-1.15.6}"; do
+    go get golang.org/dl/go${version}
+    go${version} download
+    mkdir -p ${GOPATH}/go${version}/bin
+    cp ${GOPATH}/bin/go${version} ${GOPATH}/go${version}/bin/go
+done
