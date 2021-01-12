@@ -32,7 +32,7 @@ verify: install-toolchain clone
 
 .PHONY: publish
 publish:
-	$(CHART_SCRIPTS_DIR)/publish-charts.sh $(CLONE_ROOT)/charts/aws-for-fluent-bit
+	$(CHART_SCRIPTS_DIR)/publish-charts.sh $(CLONE_ROOT)/stable/aws-for-fluent-bit
 
 .PHONY: release
 release: install-toolchain clone publish
